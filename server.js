@@ -11,6 +11,15 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 // Connect to MongoDB Atlas
 mongoose
   .connect(
@@ -43,6 +52,16 @@ app.post("/api/contact", async (req, res) => {
     res.status(200).json({ message: "Contact saved successfully!" });
   } catch (error) {
     res.status(500).json({ error: "Error saving contact data" });
+  }
+});
+
+app.get("/api/contact", async (req, res) => {
+  try {
+    const contacts = await Contact.find();
+    res.status(200).json(contacts);
+  } catch (error) {
+    console.error("Error fetching contact data:", error);
+    res.status(500).json({ error: "Error fetching contact data" });
   }
 });
 
