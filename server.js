@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -22,9 +23,7 @@ app.use((req, res, next) => {
 
 // Connect to MongoDB Atlas
 mongoose
-  .connect(
-    "mongodb+srv://shashankbmusale07:2AMSdIVVsVPMlaE7@cluster.nmv4o.mongodb.net/Contact?retryWrites=true&w=majority&appName=Cluster"
-  )
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 
