@@ -37,7 +37,7 @@ const contactSchema = new mongoose.Schema({
 const Contact = mongoose.model("Contact", contactSchema);
 
 // API route to save form data to MongoDB
-app.post("/api/contact", async (req, res) => {
+app.post("/", async (req, res) => {
   const { name, email, message } = req.body;
 
   const newContact = new Contact({
@@ -54,7 +54,7 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-app.get("/api/contact", async (req, res) => {
+app.get("/", async (req, res) => {
   try {
     const contacts = await Contact.find();
     res.status(200).json(contacts);
