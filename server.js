@@ -33,18 +33,25 @@ const contactSchema = new mongoose.Schema({
   name: String,
   email: String,
   message: String,
+  selectedFile: String,
+  createdAt: { type: Date, default: new Date() },
 });
 
 const Contact = mongoose.model("Contact", contactSchema);
 
 // API route to save form data to MongoDB
 app.post("/", async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, message, selectedFile } = req.body;
+
+  if (!name || !email || !message || !selectedFile) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
 
   const newContact = new Contact({
     name,
     email,
     message,
+    selectedFile,
   });
 
   try {
@@ -65,22 +72,54 @@ const transporter = nodemailer.createTransport({
 });
 
 app.post("/api/send-email", (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, message, selectedFile } = req.body;
 
-  const mailOptions = {
-    to: "shashankbmusale07@gmail.com", // Replace with the owner's email
-    subject: `New message from ${name}`,
-    text: message,
-    replyTo: email, // Correctly specify the email for replies
-  };
+  // Validate required fields
+  if (!name || !email || !message || !selectedFile) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Failed to send email" });
+  try {
+    // Parse Base64 file
+    const fileData = selectedFile.split(";base64,");
+    if (fileData.length !== 2) {
+      return res.status(400).json({ error: "Invalid file format" });
     }
-    res.status(200).json({ message: "Email sent successfully" });
-  });
+
+    const mimeType = fileData[0].split(":")[1];
+    const fileContent = fileData[1];
+
+    // Generate filename
+    const fileExtension = mimeType.split("/")[1];
+    const filename = `${name.replace(/ /g, "_")}_attachment.${fileExtension}`;
+
+    // Email options
+    const mailOptions = {
+      to: "shashankbmusale07@gmail.com",
+      subject: `New message from ${name}`,
+      text: message,
+      replyTo: email,
+      attachments: [
+        {
+          filename,
+          content: Buffer.from(fileContent, "base64"),
+          contentType: mimeType,
+        },
+      ],
+    };
+
+    // Send email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).json({ message: "Failed to send email" });
+      }
+      res.status(200).json({ message: "Email sent successfully", info });
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.get("/", async (req, res) => {
