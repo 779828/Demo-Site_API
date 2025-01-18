@@ -12,15 +12,6 @@
 // app.use(cors());
 // app.use(bodyParser.json());
 
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
-
 // // Connect to MongoDB Atlas
 // mongoose
 //   .connect(process.env.MONGO_URI)
@@ -100,7 +91,7 @@ app.post("/api/send-email", (req, res) => {
 
   const mailOptions = {
     from: email,
-    to: "shashankbmusale07@gmail.com", // Replace with the owner's email
+    to: "sbm095142@gmail.com", // Replace with the owner's email
     subject: `New message from ${name}`,
     text: message,
   };
