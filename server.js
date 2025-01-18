@@ -68,7 +68,7 @@ app.post("/api/send-email", (req, res) => {
   const { name, email, message } = req.body;
 
   const mailOptions = {
-    to: "sbm095142@gmail.com", // Replace with the owner's email
+    to: "shashankbmusale07@gmail.com", // Replace with the owner's email
     subject: `New message from ${name}`,
     text: message,
     replyTo: email, // Correctly specify the email for replies
