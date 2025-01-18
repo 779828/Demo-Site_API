@@ -42,6 +42,8 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("Contact", contactSchema);
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
 app.post("/", async (req, res) => {
   const { name, email, message, selectedFile } = req.body;
 
@@ -71,6 +73,14 @@ app.post("/", async (req, res) => {
 
     if (!allowedMimeTypes.includes(mimeType)) {
       return res.status(400).json({ error: "Unsupported file type" });
+    }
+
+    // Validate file size
+    const fileSize = (fileContent.length * 3) / 4; // File size in bytes
+    if (fileSize > MAX_FILE_SIZE) {
+      return res.status(400).json({
+        error: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB`,
+      });
     }
 
     // Save contact data to MongoDB
@@ -127,6 +137,14 @@ app.post("/api/send-email", (req, res) => {
 
     if (!allowedMimeTypes.includes(mimeType)) {
       return res.status(400).json({ error: "Unsupported file type" });
+    }
+
+    // Validate file size
+    const fileSize = (fileContent.length * 3) / 4; // File size in bytes
+    if (fileSize > MAX_FILE_SIZE) {
+      return res.status(400).json({
+        error: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB`,
+      });
     }
 
     // Generate filename
