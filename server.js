@@ -9,6 +9,10 @@ const nodemailer = require("nodemailer");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Increase payload size limit
+app.use(express.json({ limit: "10mb" })); // Adjust the limit as needed
+app.use(express.urlencoded({ limit: "10mb", extended: true })); // For URL-encoded data
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
