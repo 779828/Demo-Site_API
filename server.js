@@ -39,25 +39,49 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("Contact", contactSchema);
 
-// API route to save form data to MongoDB
 app.post("/", async (req, res) => {
   const { name, email, message, selectedFile } = req.body;
 
+  // Validate required fields
   if (!name || !email || !message || !selectedFile) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  const newContact = new Contact({
-    name,
-    email,
-    message,
-    selectedFile,
-  });
-
   try {
+    // Parse and validate the Base64 file
+    const fileData = selectedFile.split(";base64,");
+    if (fileData.length !== 2) {
+      return res.status(400).json({ error: "Invalid file format" });
+    }
+
+    const mimeType = fileData[0].split(":")[1];
+    const fileContent = fileData[1];
+
+    // Validate file type (PDF, DOCX, images)
+    const allowedMimeTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+    ];
+
+    if (!allowedMimeTypes.includes(mimeType)) {
+      return res.status(400).json({ error: "Unsupported file type" });
+    }
+
+    // Save contact data to MongoDB
+    const newContact = new Contact({
+      name,
+      email,
+      message,
+      selectedFile, // Store Base64 file
+    });
+
     await newContact.save();
     res.status(200).json({ message: "Contact saved successfully!" });
   } catch (error) {
+    console.error("Error saving contact:", error);
     res.status(500).json({ error: "Error saving contact data" });
   }
 });
