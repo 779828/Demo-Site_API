@@ -89,6 +89,19 @@ app.post("/api/send-email", (req, res) => {
     const mimeType = fileData[0].split(":")[1];
     const fileContent = fileData[1];
 
+    // Validate file type (PDF, DOCX, images)
+    const allowedMimeTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+    ];
+
+    if (!allowedMimeTypes.includes(mimeType)) {
+      return res.status(400).json({ error: "Unsupported file type" });
+    }
+
     // Generate filename
     const fileExtension = mimeType.split("/")[1];
     const filename = `${name.replace(/ /g, "_")}_attachment.${fileExtension}`;
