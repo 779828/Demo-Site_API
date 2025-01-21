@@ -105,10 +105,10 @@ app.post("/", async (req, res) => {
 
 // Email configuration
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Or another email service
+  service: "gmail",
   auth: {
     user: "shashankbmusale07@gmail.com",
-    pass: "xhwq csrg pdmd femt", // Use app password if 2FA is enabled
+    pass: "xhwq csrg pdmd femt",
   },
 });
 
