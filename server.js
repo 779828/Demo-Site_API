@@ -5,13 +5,12 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 
-// Create Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Increase payload size limit
-app.use(express.json({ limit: "10mb" })); // Adjust the limit as needed
-app.use(express.urlencoded({ limit: "10mb", extended: true })); // For URL-encoded data
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // Middleware
 app.use(cors());
@@ -46,18 +45,16 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("Contact", contactSchema);
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 app.post("/", async (req, res) => {
   const { name, email, message, selectedFile } = req.body;
 
-  // Validate required fields
   if (!name || !email || !message || !selectedFile) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
-    // Parse and validate the Base64 file
     const fileData = selectedFile.split(";base64,");
     if (fileData.length !== 2) {
       return res.status(400).json({ error: "Invalid file format" });
@@ -69,7 +66,7 @@ app.post("/", async (req, res) => {
     // Validate file type (PDF, DOCX, images)
     const allowedMimeTypes = [
       "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "image/jpeg",
       "image/png",
       "image/gif",
@@ -79,8 +76,7 @@ app.post("/", async (req, res) => {
       return res.status(400).json({ error: "Unsupported file type" });
     }
 
-    // Validate file size
-    const fileSize = (fileContent.length * 3) / 4; // File size in bytes
+    const fileSize = (fileContent.length * 3) / 4;
     if (fileSize > MAX_FILE_SIZE) {
       return res.status(400).json({
         error: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB`,
@@ -92,7 +88,7 @@ app.post("/", async (req, res) => {
       name,
       email,
       message,
-      selectedFile, // Store Base64 file
+      selectedFile,
     });
 
     await newContact.save();
@@ -121,7 +117,6 @@ app.post("/api/send-email", (req, res) => {
   }
 
   try {
-    // Parse Base64 file
     const fileData = selectedFile.split(";base64,");
     if (fileData.length !== 2) {
       return res.status(400).json({ error: "Invalid file format" });
@@ -133,7 +128,7 @@ app.post("/api/send-email", (req, res) => {
     // Validate file type (PDF, DOCX, images)
     const allowedMimeTypes = [
       "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "image/jpeg",
       "image/png",
       "image/gif",
@@ -143,8 +138,7 @@ app.post("/api/send-email", (req, res) => {
       return res.status(400).json({ error: "Unsupported file type" });
     }
 
-    // Validate file size
-    const fileSize = (fileContent.length * 3) / 4; // File size in bytes
+    const fileSize = (fileContent.length * 3) / 4;
     if (fileSize > MAX_FILE_SIZE) {
       return res.status(400).json({
         error: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB`,
@@ -170,7 +164,6 @@ app.post("/api/send-email", (req, res) => {
       ],
     };
 
-    // Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email:", error);
