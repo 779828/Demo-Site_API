@@ -146,7 +146,7 @@ app.post("/api/send-email", (req, res) => {
 
     // Email options
     const mailOptions = {
-      to: "mohit.karonde435@gmail.com",
+      to: "shashankbmusale07@gmail.com",
       subject: `New message from ${name}`,
       text: message,
       replyTo: email,
