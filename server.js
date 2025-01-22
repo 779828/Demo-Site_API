@@ -12,7 +12,6 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -63,7 +62,6 @@ app.post("/", async (req, res) => {
     const mimeType = fileData[0].split(":")[1];
     const fileContent = fileData[1];
 
-    // Validate file type (PDF, DOCX, images)
     const allowedMimeTypes = [
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -99,7 +97,6 @@ app.post("/", async (req, res) => {
   }
 });
 
-// Email configuration
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -111,7 +108,6 @@ const transporter = nodemailer.createTransport({
 app.post("/api/send-email", (req, res) => {
   const { name, email, message, selectedFile } = req.body;
 
-  // Validate required fields
   if (!name || !email || !message || !selectedFile) {
     return res.status(400).json({ error: "All fields are required" });
   }
@@ -125,7 +121,6 @@ app.post("/api/send-email", (req, res) => {
     const mimeType = fileData[0].split(":")[1];
     const fileContent = fileData[1];
 
-    // Validate file type (PDF, DOCX, images)
     const allowedMimeTypes = [
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
